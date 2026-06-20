@@ -12,7 +12,16 @@
       margin: 0;
       background: transparent;
       color: #e0e0e0;
-      overflow: hidden;
+      overflow-y: auto;
+    }
+
+    body::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    body::-webkit-scrollbar-thumb {
+      background: #2d2d3d;
+      border-radius: 2px;
     }
 
     .config-card {
@@ -22,7 +31,7 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       max-width: 320px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
@@ -42,12 +51,13 @@
       color: #666;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      margin-top: 4px;
     }
 
     .radio-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .radio-label {
@@ -55,7 +65,7 @@
       align-items: center;
       justify-content: space-between;
       background: #141416;
-      padding: 10px 12px;
+      padding: 8px 12px;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.04);
       cursor: pointer;
@@ -89,6 +99,13 @@
       color: #00a3ff;
       text-align: right;
       font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .divider {
+      height: 1px;
+      background: #2d2d3d;
+      margin: 6px 0;
     }
   </style>
 </head>
@@ -100,57 +117,96 @@
       <span>✨ FX Particle Controller</span>
     </div>
 
-    <div class="section-title">Motion Effect Type</div>
-
+    <div class="section-title">Hover Motion Trail</div>
     <div class="radio-group">
-      <label class="radio-label" id="lbl-quantum">
+      <label class="radio-label" id="lbl-move-quantum">
         <div>
           <div>Quantum Trail</div>
           <div class="mode-desc">Standard high-tech linear fading sparks</div>
         </div>
-        <input type="radio" name="fx-type" value="quantum" onchange="switchFX('quantum')">
+        <input type="radio" name="move-fx" value="quantum" onchange="switchMoveFX('quantum')">
       </label>
 
-      <label class="radio-label" id="lbl-float">
+      <label class="radio-label" id="lbl-move-float">
         <div>
           <div>Anti-Gravity</div>
           <div class="mode-desc">Particles float upward gently like cyber smoke</div>
         </div>
-        <input type="radio" name="fx-type" value="float" onchange="switchFX('float')">
+        <input type="radio" name="move-fx" value="float" onchange="switchMoveFX('float')">
       </label>
 
-      <label class="radio-label" id="lbl-burst">
+      <label class="radio-label" id="lbl-move-burst">
         <div>
           <div>Supernova Burst</div>
           <div class="mode-desc">Explosive high-velocity matrix radiation</div>
         </div>
-        <input type="radio" name="fx-type" value="burst" onchange="switchFX('burst')">
+        <input type="radio" name="move-fx" value="burst" onchange="switchMoveFX('burst')">
       </label>
     </div>
 
-    <div class="status-bar" id="status-text">EFFECT ARMED</div>
+    <div class="divider"></div>
+
+    <div class="section-title">Click Trigger Action</div>
+    <div class="radio-group">
+      <label class="radio-label" id="lbl-click-none">
+        <div>
+          <div>Disabled</div>
+          <div class="mode-desc">No visual response upon clicking</div>
+        </div>
+        <input type="radio" name="click-fx" value="none" onchange="switchClickFX('none')">
+      </label>
+
+      <label class="radio-label" id="lbl-click-ripple">
+        <div>
+          <div>Cyber Ripple</div>
+          <div class="mode-desc">Neon shockwave expanding from the core</div>
+        </div>
+        <input type="radio" name="click-fx" value="ripple" onchange="switchClickFX('ripple')">
+      </label>
+
+      <label class="radio-label" id="lbl-click-sparks">
+        <div>
+          <div>Quantum Sparkle</div>
+          <div class="mode-desc">Circular explosion of digital rings</div>
+        </div>
+        <input type="radio" name="click-fx" value="sparks" onchange="switchClickFX('sparks')">
+      </label>
+    </div>
+
+    <div class="status-bar" id="status-text">MATRIX ONLINE</div>
   </div>
 
   <script>
-    // 初始化时同步本地缓存的特效类型
-    const currentFX = localStorage.getItem("aicupa_cursor_fx") || "quantum";
-    document.querySelector(`input[value="${currentFX}"]`).checked = true;
-    document.getElementById(`lbl-${currentFX}`).classList.add("active");
+    // 初始化同步缓存
+    const currentMoveFX = localStorage.getItem("aicupa_cursor_fx") || "quantum";
+    const currentClickFX = localStorage.getItem("aicupa_cursor_click_fx") || "ripple";
 
-    function switchFX(type) {
-      // 切换高亮样式
-      document.querySelectorAll('.radio-label').forEach(el => el.classList.remove('active'));
-      document.getElementById(`lbl-${type}`).classList.add("active");
+    document.querySelector(`input[name="move-fx"][value="${currentMoveFX}"]`).checked = true;
+    document.getElementById(`lbl-move-${currentMoveFX}`).classList.add("active");
 
-      // 写入持久化缓存
+    document.querySelector(`input[name="click-fx"][value="${currentClickFX}"]`).checked = true;
+    document.getElementById(`lbl-click-${currentClickFX}`).classList.add("active");
+
+    function switchMoveFX(type) {
+      document.querySelectorAll('label[id^="lbl-move-"]').forEach(el => el.classList.remove('active'));
+      document.getElementById(`lbl-move-${type}`).classList.add("active");
       localStorage.setItem("aicupa_cursor_fx", type);
-
-      // 实时广播跨域消息通知主应用 inject.js 实时热更新物理模型
       window.parent.postMessage({ type: 'plugin-call', method: 'syncCursorFXType', fx: type }, '*');
+      triggerStatusBar("TRAIL CONFIG CHANGED");
+    }
 
+    function switchClickFX(type) {
+      document.querySelectorAll('label[id^="lbl-click-"]').forEach(el => el.classList.remove('active'));
+      document.getElementById(`lbl-click-${type}`).classList.add("active");
+      localStorage.setItem("aicupa_cursor_click_fx", type);
+      window.parent.postMessage({ type: 'plugin-call', method: 'syncCursorClickFXType', fx: type }, '*');
+      triggerStatusBar("CLICK FX CONFIG CHANGED");
+    }
+
+    function triggerStatusBar(txt) {
       const status = document.getElementById("status-text");
-      status.innerText = "FX RE-CALIBRATED";
-      setTimeout(() => { status.innerText = "EFFECT ARMED"; }, 1500);
+      status.innerText = txt;
+      setTimeout(() => { status.innerText = "MATRIX ONLINE"; }, 1500);
     }
   </script>
 </body>
