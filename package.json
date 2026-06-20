@@ -1,6 +1,6 @@
 {
   "name": "@aicupa/plugin-cursor-glow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cyberpunk Neon Blue Cursor Particle Trail Plugin for Aicupa",
   "view": "./view",
   "viewjs": "./inject.js",
