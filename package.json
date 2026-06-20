@@ -1,15 +1,13 @@
 {
-  "name": "@aicupa/plugin-template",
+  "name": "@aicupa/plugin-cursor-glow",
   "version": "1.0.0",
-  "description": "aicupa plugin template",
-  "main": "./service",
+  "description": "Cyberpunk Neon Blue Cursor Particle Trail Plugin for Aicupa",
   "view": "./view",
+  "viewjs": "./inject.js",
+  "author": "Muhai",
+  "license": "MIT",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@aicupa/api": "^1.0.4"
   }
 }
